@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestSelectionSort(t *testing.T) {
+func TestBinarySearch(t *testing.T) {
 	data := []int{1, 2, 13, 44, 50, 51, 52}
 
 	assert.Equal(t, searching.BinarySearch(data, -2), -1)
