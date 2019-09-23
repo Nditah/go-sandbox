@@ -12,6 +12,18 @@ func SelectionSort(values []int) {
 	}
 }
 
+func InsertionSort(values []int) {
+	for i := 0; i < len(values); i++ {
+		for j := i; j > 0; j-- {
+			if values[j] < values[j-1] {
+				swap(values, j, j-1)
+			} else {
+				break
+			}
+		}
+	}
+}
+
 func BubbleSort(values []int) {
 	for i := 0; i < len(values)-1; i++ {
 		swapHappened := false;
