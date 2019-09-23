@@ -39,16 +39,16 @@ func BubbleSort(values []int) {
 	}
 }
 
-func CountSort(values []int) {
-	m := make(map[int]int)
+func CountSort(values []int, max int) {
+	counts := make([]int, max)
 	for _, value := range values {
-		m[value]++
+		counts[value]++
 	}
 
 	counter := 0
-	for k, v := range m {
-		for i := 0; i < v; i++ {
-			values[counter] = k
+	for value, count := range counts {
+		for i := 0; i < count; i++ {
+			values[counter] = value
 			counter++
 		}
 	}

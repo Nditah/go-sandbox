@@ -47,12 +47,13 @@ func TestBubbleSort(t *testing.T) {
 }
 
 func TestCountSort(t *testing.T) {
+	const maxValue = 5
 	data := make([]int, 20)
 	for i := range data {
-		data[i] = rand.Int() % 5
+		data[i] = rand.Int() % maxValue
 	}
 
-	sorting.CountSort(data)
+	sorting.CountSort(data, maxValue)
 
 	if !sort.IntsAreSorted(data) {
 		t.Errorf("not sorted: %v", data)
