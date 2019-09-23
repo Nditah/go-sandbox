@@ -27,6 +27,59 @@ func BubbleSort(values []int) {
 	}
 }
 
+func CountSort(values []int) {
+	m := make(map[int]int)
+	for _, value := range values {
+		m[value]++
+	}
+
+	counter := 0
+	for k, v := range m {
+		for i := 0; i < v; i++ {
+			values[counter] = k
+			counter++
+		}
+	}
+}
+
+func MergeSort(values []int) []int {
+	if len(values) == 1 {
+		return values
+	}
+
+	center := len(values) / 2
+	left := values[:center]
+	right := values[center:]
+
+	left = MergeSort(left)
+	right = MergeSort(right)
+
+	return merge(left, right)
+}
+
+func merge(left []int, right []int) []int {
+	var result []int
+	leftIndex := 0
+	rightIndex := 0
+
+	for leftIndex < len(left) && rightIndex < len(right) {
+		if left[leftIndex] < right[rightIndex] {
+			result = append(result, left[leftIndex])
+			leftIndex++
+		} else {
+			result = append(result, right[rightIndex])
+			rightIndex++
+		}
+	}
+	if leftIndex < len(left) {
+		result = append(result, left[leftIndex:]...)
+	}
+	if rightIndex < len(right) {
+		result = append(result, right[rightIndex:]...)
+	}
+	return result
+}
+
 func swap(arr []int, i int, j int) {
 	arr[i], arr[j] = arr[j], arr[i]
 }
