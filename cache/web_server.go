@@ -3,18 +3,19 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"go-sandbox/cache/datastore"
 	"net/http"
 )
 
 // TODO: switch to usage of in-memory storage
-var items = make(map[string]string)
+var storage = datastore.New()
 
 func main() {
 	// TODO: populate items storage externally, not in code
-	items["name"] = "Roman"
-	items["age"] = "35"
-	items["weight"] = "82.5kg"
-	items["car"] = "Renault"
+	storage.Set("name", "Roman")
+	storage.Set("age", "35")
+	storage.Set("weight", "82.5kg")
+	storage.Set("car", "Renault")
 
 	router := mux.NewRouter()
 	router.HandleFunc("/items/{key}", CreateString).Methods("POST")
@@ -37,7 +38,7 @@ func CreateString(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	items[key] = value
+	storage.Set(key, value)
 	resultJson, err := json.Marshal(value)
 	if err != nil {
 		writer.Header().Set("Content-Type", "application/json")
@@ -53,13 +54,13 @@ func CreateString(writer http.ResponseWriter, request *http.Request) {
 func ReadString(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	key := vars["key"]
-	if _, ok := items[key]; !ok {
+	value, ok := storage.Get(key)
+	if !ok {
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(404)
 		return
 	}
 
-	value := items[key]
 	resultJson, err := json.Marshal(value)
 	if err != nil {
 		writer.Header().Set("Content-Type", "application/json")
@@ -73,8 +74,7 @@ func ReadString(writer http.ResponseWriter, request *http.Request) {
 }
 
 func ReadStringKeys(writer http.ResponseWriter, request *http.Request) {
-	keys := extractMapKeys(items)
-
+	keys := storage.GetKeys()
 	resultJson, err := json.Marshal(keys)
 	if err != nil {
 		writer.Header().Set("Content-Type", "application/json")
@@ -90,19 +90,10 @@ func ReadStringKeys(writer http.ResponseWriter, request *http.Request) {
 func DeleteString(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	key := vars["key"]
-	if _, ok := items[key]; !ok {
+	if ok := storage.Delete(key); !ok {
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(404)
 		return
 	}
-	delete(items, key)
 	writer.WriteHeader(http.StatusNoContent)
-}
-
-func extractMapKeys(mapToExtract map[string]string) []string {
-	keys := make([]string, 0, len(mapToExtract))
-	for k := range mapToExtract {
-		keys = append(keys, k)
-	}
-	return keys
 }
