@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-// TODO: switch to usage of in-memory storage
 var storage = datastore.New()
 
+// TODO: add tests and load tests
 func main() {
 	// TODO: populate items storage externally, not in code
 	storage.Set("name", "Roman")
@@ -27,27 +27,23 @@ func main() {
 }
 
 func CreateString(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	key := vars["key"]
-
 	var value string
 	err := json.NewDecoder(request.Body).Decode(&value)
 	if err != nil {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(500)
+		populateResponseWriter(writer, http.StatusInternalServerError)
 		return
 	}
 
+	vars := mux.Vars(request)
+	key := vars["key"]
 	storage.Set(key, value)
 	resultJson, err := json.Marshal(value)
 	if err != nil {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(500)
+		populateResponseWriter(writer, http.StatusInternalServerError)
 		return
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusCreated)
+	populateResponseWriter(writer, http.StatusCreated)
 	writer.Write(resultJson)
 }
 
@@ -56,20 +52,17 @@ func ReadString(writer http.ResponseWriter, request *http.Request) {
 	key := vars["key"]
 	value, ok := storage.Get(key)
 	if !ok {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(404)
+		populateResponseWriter(writer, http.StatusNotFound)
 		return
 	}
 
 	resultJson, err := json.Marshal(value)
 	if err != nil {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(500)
+		populateResponseWriter(writer, http.StatusInternalServerError)
 		return
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
+	populateResponseWriter(writer, http.StatusOK)
 	writer.Write(resultJson)
 }
 
@@ -77,13 +70,11 @@ func ReadStringKeys(writer http.ResponseWriter, request *http.Request) {
 	keys := storage.GetKeys()
 	resultJson, err := json.Marshal(keys)
 	if err != nil {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(500)
+		populateResponseWriter(writer, http.StatusInternalServerError)
 		return
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
+	populateResponseWriter(writer, http.StatusOK)
 	writer.Write(resultJson)
 }
 
@@ -91,9 +82,14 @@ func DeleteString(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	key := vars["key"]
 	if ok := storage.Delete(key); !ok {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(404)
+		populateResponseWriter(writer, http.StatusNotFound)
 		return
 	}
-	writer.WriteHeader(http.StatusNoContent)
+
+	populateResponseWriter(writer, http.StatusNoContent)
+}
+
+func populateResponseWriter(writer http.ResponseWriter, statusCode int) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(statusCode)
 }
