@@ -1,23 +1,26 @@
 package datastore
 
-import "sync"
+import (
+	"go-sandbox/cache/datatype"
+	"sync"
+)
 
 type DataStore struct {
 	sync.RWMutex // ← this mutex protect cache below
-	cache        map[string]string
+	cache        map[string]datatype.DataType
 }
 
 func New() *DataStore {
 	return &DataStore{
-		cache: make(map[string]string),
+		cache: make(map[string]datatype.DataType),
 	}
 }
 
-func (ds *DataStore) set(key string, value string) {
+func (ds *DataStore) set(key string, value datatype.DataType) {
 	ds.cache[key] = value
 }
 
-func (ds *DataStore) get(key string) string {
+func (ds *DataStore) get(key string) datatype.DataType {
 	return ds.cache[key]
 }
 
@@ -46,20 +49,21 @@ func (ds *DataStore) count() int {
 	return len(ds.cache)
 }
 
-func (ds *DataStore) Set(key string, value string) {
+func (ds *DataStore) Set(key string, value datatype.DataType) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.set(key, value)
 }
 
-func (ds *DataStore) Get(key string) (string, bool) {
+func (ds *DataStore) Get(key string) (*datatype.DataType, bool) {
 	ds.RLock()
 	defer ds.RUnlock()
 	isContains := ds.contains(key)
 	if isContains {
-		return ds.get(key), isContains
+		res := ds.get(key)
+		return &res, isContains
 	}
-	return "", isContains
+	return nil, isContains
 }
 
 func (ds *DataStore) GetKeys() []string {

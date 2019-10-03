@@ -2,8 +2,10 @@ package datastore
 
 import (
 	"github.com/stretchr/testify/assert"
+	"go-sandbox/cache/datatype"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestNew(t *testing.T) {
@@ -14,8 +16,8 @@ func TestNew(t *testing.T) {
 func TestDataStore_set(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
-	expectedMap := make(map[string]string)
+	value := datatype.New("Some value", time.Minute)
+	expectedMap := make(map[string]datatype.DataType)
 	expectedMap[key] = value
 
 	dataStore.set(key, value)
@@ -27,16 +29,15 @@ func TestDataStore_set(t *testing.T) {
 func TestDataStore_get(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
+	value := datatype.New("Some value", time.Minute)
 	dataStore.cache[key] = value
-
 	assert.Equal(t, dataStore.get(key), value)
 }
 
 func TestDataStore_getKeys(t *testing.T) {
 	dataStore := New()
-	dataStore.cache["key 1"] = "value 1"
-	dataStore.cache["key 2"] = "value 2"
+	dataStore.cache["key 1"] = datatype.New("value 1", time.Minute)
+	dataStore.cache["key 2"] = datatype.New("value 2", time.Minute)
 
 	keys := dataStore.getKeys()
 	assert.Equal(t, len(keys), 2)
@@ -47,7 +48,7 @@ func TestDataStore_getKeys(t *testing.T) {
 func TestDataStore_delete(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
+	value := datatype.New("Some value", time.Minute)
 	dataStore.cache[key] = value
 
 	assert.Equal(t, dataStore.delete(key), true, "existing key")
@@ -59,7 +60,7 @@ func TestDataStore_delete(t *testing.T) {
 func TestDataStore_contains(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
+	value := datatype.New("Some value", time.Minute)
 	dataStore.cache[key] = value
 
 	assert.Equal(t, dataStore.contains(key), true, "existing key")
@@ -68,8 +69,8 @@ func TestDataStore_contains(t *testing.T) {
 
 func TestDataStore_count(t *testing.T) {
 	dataStore := New()
-	dataStore.cache["key 1"] = "value 1"
-	dataStore.cache["key 2"] = "value 2"
+	dataStore.cache["key 1"] = datatype.New("value 1", time.Minute)
+	dataStore.cache["key 2"] = datatype.New("value 2", time.Minute)
 
 	assert.Equal(t, dataStore.count(), 2)
 }
@@ -77,8 +78,8 @@ func TestDataStore_count(t *testing.T) {
 func TestDataStore_Set(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
-	expectedMap := make(map[string]string)
+	value := datatype.New("Some value", time.Minute)
+	expectedMap := make(map[string]datatype.DataType)
 	expectedMap[key] = value
 
 	dataStore.Set(key, value)
@@ -90,22 +91,24 @@ func TestDataStore_Set(t *testing.T) {
 func TestDataStore_Get(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
+	value := datatype.New("Some value", time.Minute)
 	dataStore.cache[key] = value
 
 	res, ok := dataStore.Get(key)
-	assert.Equal(t, res, value)
-	assert.Equal(t, ok, true)
+	assert.Equal(t, value, *res)
+	assert.Equal(t, true, ok)
 
 	res, ok = dataStore.Get("another key")
-	assert.Equal(t, res, "")
-	assert.Equal(t, ok, false)
+	if res != nil {
+		t.Errorf("nil should be returned")
+	}
+	assert.Equal(t, false, ok)
 }
 
 func TestDataStore_GetKeys(t *testing.T) {
 	dataStore := New()
-	dataStore.cache["key 1"] = "value 1"
-	dataStore.cache["key 2"] = "value 2"
+	dataStore.cache["key 1"] = datatype.New("value 1", time.Minute)
+	dataStore.cache["key 2"] = datatype.New("value 2", time.Minute)
 
 	keys := dataStore.GetKeys()
 	assert.Equal(t, len(keys), 2)
@@ -116,7 +119,7 @@ func TestDataStore_GetKeys(t *testing.T) {
 func TestDataStore_Delete(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
+	value := datatype.New("Some value", time.Minute)
 	dataStore.cache[key] = value
 
 	assert.Equal(t, dataStore.Delete(key), true, "existing key")
@@ -128,7 +131,7 @@ func TestDataStore_Delete(t *testing.T) {
 func TestDataStore_Contains(t *testing.T) {
 	dataStore := New()
 	key := "Some key"
-	value := "Some value"
+	value := datatype.New("Some value", time.Minute)
 	dataStore.cache[key] = value
 
 	assert.Equal(t, dataStore.Contains(key), true, "existing key")
@@ -137,8 +140,8 @@ func TestDataStore_Contains(t *testing.T) {
 
 func TestDataStore_Count(t *testing.T) {
 	dataStore := New()
-	dataStore.cache["key 1"] = "value 1"
-	dataStore.cache["key 2"] = "value 2"
+	dataStore.cache["key 1"] = datatype.New("value 1", time.Minute)
+	dataStore.cache["key 2"] = datatype.New("value 2", time.Minute)
 
 	assert.Equal(t, dataStore.Count(), 2)
 }
