@@ -21,6 +21,14 @@ func (ds *DataStore) get(key string) string {
 	return ds.cache[key]
 }
 
+func (ds *DataStore) getKeys() []string {
+	keys := make([]string, 0, len(ds.cache))
+	for k := range ds.cache {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
 func (ds *DataStore) delete(key string) bool {
 	if ds.contains(key) {
 		delete(ds.cache, key)
@@ -76,12 +84,4 @@ func (ds *DataStore) Count() int {
 	ds.RLock()
 	defer ds.RUnlock()
 	return ds.count()
-}
-
-func (ds *DataStore) getKeys() []string {
-	keys := make([]string, 0, len(ds.cache))
-	for k := range ds.cache {
-		keys = append(keys, k)
-	}
-	return keys
 }
