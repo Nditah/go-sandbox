@@ -1,52 +1,53 @@
 package datastore
 
 import (
+	"github.com/umpc/go-sortedmap"
 	"go-sandbox/cache/datatype"
 	"sync"
 )
 
 type DataStore struct {
 	sync.RWMutex // ← this mutex protect cache below
-	cache        map[string]datatype.DataType
+	cache        sortedmap.SortedMap
 }
 
 func New() *DataStore {
 	return &DataStore{
-		cache: make(map[string]datatype.DataType),
+		cache: *sortedmap.New(10, func(item1, item2 interface{}) bool {
+			dt1 := item1.(datatype.DataType)
+			dt2 := item2.(datatype.DataType)
+			return dt1.DeathTime.Before(dt2.DeathTime)
+		}),
 	}
 }
 
 func (ds *DataStore) set(key string, value datatype.DataType) {
-	ds.cache[key] = value
+	ds.cache.Insert(key, value)
 }
 
-func (ds *DataStore) get(key string) datatype.DataType {
-	return ds.cache[key]
+func (ds *DataStore) get(key string) (interface{}, bool) {
+	return ds.cache.Get(key)
 }
 
-func (ds *DataStore) getKeys() []string {
-	keys := make([]string, 0, len(ds.cache))
-	for k := range ds.cache {
-		keys = append(keys, k)
-	}
-	return keys
+func (ds *DataStore) getKeys() []interface{} {
+	return ds.cache.Keys()
 }
 
-func (ds *DataStore) delete(key string) bool {
-	if ds.contains(key) {
-		delete(ds.cache, key)
-		return true
-	}
-	return false
+func (ds *DataStore) delete(key interface{}) bool {
+	return ds.cache.Delete(key)
+}
+
+func (ds *DataStore) batchDelete(keys []interface{}) []bool {
+	return ds.cache.BatchDelete(keys)
 }
 
 func (ds *DataStore) contains(key string) bool {
-	_, ok := ds.cache[key]
+	_, ok := ds.cache.Get(key)
 	return ok
 }
 
 func (ds *DataStore) count() int {
-	return len(ds.cache)
+	return ds.cache.Len()
 }
 
 func (ds *DataStore) Set(key string, value datatype.DataType) {
@@ -55,27 +56,28 @@ func (ds *DataStore) Set(key string, value datatype.DataType) {
 	ds.set(key, value)
 }
 
-func (ds *DataStore) Get(key string) (*datatype.DataType, bool) {
+func (ds *DataStore) Get(key string) (interface{}, bool) {
 	ds.RLock()
 	defer ds.RUnlock()
-	isContains := ds.contains(key)
-	if isContains {
-		res := ds.get(key)
-		return &res, isContains
-	}
-	return nil, isContains
+	return ds.get(key)
 }
 
-func (ds *DataStore) GetKeys() []string {
+func (ds *DataStore) GetKeys() []interface{} {
 	ds.RLock()
 	defer ds.RUnlock()
 	return ds.getKeys()
 }
 
-func (ds *DataStore) Delete(key string) bool {
+func (ds *DataStore) Delete(key interface{}) bool {
 	ds.Lock()
 	defer ds.Unlock()
 	return ds.delete(key)
+}
+
+func (ds *DataStore) BatchDelete(keys []interface{}) []bool {
+	ds.Lock()
+	defer ds.Unlock()
+	return ds.batchDelete(keys)
 }
 
 func (ds *DataStore) Contains(key string) bool {
