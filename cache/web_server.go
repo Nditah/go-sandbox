@@ -14,10 +14,12 @@ var storage = datastore.New()
 // TODO: add tests and load tests
 func main() {
 	// TODO: populate items storage externally, not in code
-	storage.Set("name", datatype.New("Roman", 5*time.Minute))
+	storage.Set("name", datatype.New("Roman", 1*time.Minute))
 	storage.Set("age", datatype.New("35", 5*time.Minute))
-	storage.Set("weight", datatype.New("82.5kg", 5*time.Minute))
-	storage.Set("car", datatype.New("Renault", 5*time.Minute))
+	storage.Set("weight", datatype.New("82.5kg", 2*time.Minute))
+	storage.Set("car", datatype.New("Renault", 3*time.Minute))
+
+	go cleanupExpiredItems()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/items/{key}", CreateString).Methods(http.MethodPost)
@@ -26,6 +28,24 @@ func main() {
 	router.HandleFunc("/items/{key}", DeleteString).Methods(http.MethodDelete)
 
 	http.ListenAndServe(":8000", router)
+}
+
+func cleanupExpiredItems() {
+	for {
+		// TODO: replace with more effective cleanup method
+		keys := storage.GetKeys()
+		keysToDelete := make([]interface{}, 0)
+		for _, key := range keys {
+			value, _ := storage.Get(key.(string))
+			dataTypeItem := value.(datatype.DataType)
+			if dataTypeItem.DeathTime.Before(time.Now()) {
+				keysToDelete = append(keysToDelete, key)
+			} else {
+				break
+			}
+		}
+		storage.BatchDelete(keysToDelete)
+	}
 }
 
 func CreateString(writer http.ResponseWriter, request *http.Request) {
