@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/carlescere/scheduler"
 	"github.com/gorilla/mux"
 	"go-sandbox/cache/datastore"
 	"go-sandbox/cache/datatype"
@@ -19,7 +20,7 @@ func main() {
 	storage.Set("weight", datatype.New("82.5kg", 2*time.Minute))
 	storage.Set("car", datatype.New("Renault", 3*time.Minute))
 
-	go cleanupExpiredItems()
+	scheduler.Every(10).Seconds().Run(cleanupExpiredItems)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/items/{key}", CreateString).Methods(http.MethodPost)
@@ -31,20 +32,20 @@ func main() {
 }
 
 func cleanupExpiredItems() {
-	for {
-		// TODO: replace with more effective cleanup method
-		keys := storage.GetKeys()
-		keysToDelete := make([]interface{}, 0)
-		for _, key := range keys {
-			value, _ := storage.Get(key.(string))
-			dataTypeItem := value.(datatype.DataType)
-			if dataTypeItem.DeathTime.Before(time.Now()) {
-				keysToDelete = append(keysToDelete, key)
-			} else {
-				break
-			}
+	// TODO: replace with more effective cleanup method
+	keys := storage.GetKeys()
+	mostRightIndex := -1
+	for index, key := range keys {
+		value, _ := storage.Get(key.(string))
+		dataTypeItem := value.(datatype.DataType)
+		if dataTypeItem.DeathTime.Before(time.Now()) {
+			mostRightIndex = index
+		} else {
+			break
 		}
-		storage.BatchDelete(keysToDelete)
+	}
+	if mostRightIndex != -1 {
+		storage.BatchDelete(keys[:mostRightIndex+1])
 	}
 }
 
