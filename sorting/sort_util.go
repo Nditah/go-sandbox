@@ -35,7 +35,7 @@ func BubbleSort(values []int) {
 		}
 		if !swapHappened {
 			return
-		};
+		}
 	}
 }
 
@@ -54,6 +54,7 @@ func CountSort(values []int, max int) {
 	}
 }
 
+// TODO: determine why current implementation of MergeSort so slow
 func MergeSort(values []int) []int {
 	if len(values) == 1 {
 		return values

@@ -17,3 +17,15 @@ func TestIsPalindromeIgnoreCase(t *testing.T) {
 	assert.Equal(t, strings.IsPalindromeIgnoreCase("AbbaGabBa"), true, "Palindrome")
 	assert.Equal(t, strings.IsPalindromeIgnoreCase("Several words sdrow lareves"), true, "Palindrome")
 }
+
+func BenchmarkIsPalindrome(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		strings.IsPalindrome("abbaGabba")
+	}
+}
+
+func BenchmarkIsPalindromeIgnoreCase(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		strings.IsPalindromeIgnoreCase("AbbaGabBa")
+	}
+}
