@@ -17,3 +17,11 @@ func IsPalindrome(s string) bool {
 func IsPalindromeIgnoreCase(s string) bool {
 	return IsPalindrome(strings.ToLower(s))
 }
+
+func Reverse(s string) string {
+	res := ""
+	for _, ch := range s {
+		res = string(ch) + res
+	}
+	return res
+}

@@ -18,6 +18,10 @@ func TestIsPalindromeIgnoreCase(t *testing.T) {
 	assert.Equal(t, strings.IsPalindromeIgnoreCase("Several words sdrow lareves"), true, "Palindrome")
 }
 
+func TestReverse(t *testing.T) {
+	assert.Equal(t, "ierdnA", strings.Reverse("Andrei"))
+}
+
 func BenchmarkIsPalindrome(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		strings.IsPalindrome("abbaGabba")
@@ -27,5 +31,11 @@ func BenchmarkIsPalindrome(b *testing.B) {
 func BenchmarkIsPalindromeIgnoreCase(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		strings.IsPalindromeIgnoreCase("AbbaGabBa")
+	}
+}
+
+func BenchmarkReverse(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		strings.Reverse("AbbaGabBa")
 	}
 }
