@@ -57,59 +57,73 @@ func TestMergeSort(t *testing.T) {
 	}
 }
 
+const itemsCount = 1000
+
 func BenchmarkBubbleSort(b *testing.B) {
-	data := prepareArray(1000)
+	data := prepareArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.BubbleSort(data)
 	}
 }
 
 func BenchmarkBubbleSortSorted(b *testing.B) {
-	data := prepareSortedArray(1000)
+	data := prepareSortedArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.BubbleSort(data)
 	}
 }
 
 func BenchmarkInsertionSort(b *testing.B) {
-	data := prepareArray(1000)
+	data := prepareArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.InsertionSort(data)
 	}
 }
 
 func BenchmarkInsertionSortSorted(b *testing.B) {
-	data := prepareSortedArray(1000)
+	data := prepareSortedArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.InsertionSort(data)
 	}
 }
 
 func BenchmarkMergeSort(b *testing.B) {
-	data := prepareArray(1000)
+	data := prepareArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.MergeSort(data)
 	}
 }
 
 func BenchmarkMergeSortSorted(b *testing.B) {
-	data := prepareSortedArray(1000)
+	data := prepareSortedArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.MergeSort(data)
 	}
 }
 
 func BenchmarkSelectionSort(b *testing.B) {
-	data := prepareArray(1000)
+	data := prepareArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.SelectionSort(data)
 	}
 }
 
 func BenchmarkSelectionSortSorted(b *testing.B) {
-	data := prepareSortedArray(1000)
+	data := prepareSortedArray(itemsCount)
 	for n := 0; n < b.N; n++ {
 		sorting.SelectionSort(data)
+	}
+}
+
+func BenchmarkCountSort(b *testing.B) {
+	const maxValue = 200
+	data := make([]int, itemsCount)
+	for i := range data {
+		data[i] = rand.Int() % maxValue
+	}
+
+	for n := 0; n < b.N; n++ {
+		sorting.CountSort(data, maxValue)
 	}
 }
 

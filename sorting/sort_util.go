@@ -26,7 +26,7 @@ func InsertionSort(values []int) {
 
 func BubbleSort(values []int) {
 	for i := 0; i < len(values)-1; i++ {
-		swapHappened := false;
+		swapHappened := false
 		for j := 0; j < len(values)-1-i; j++ {
 			if values[j] > values[j+1] {
 				values[j], values[j+1] = values[j+1], values[j]
