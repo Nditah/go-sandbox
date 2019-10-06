@@ -2,13 +2,13 @@ package sorting
 
 func SelectionSort(values []int) {
 	for i := 0; i < len(values); i++ {
-		maxIndex := i
+		minIndex := i
 		for j := i + 1; j < len(values); j++ {
-			if values[j] < values[maxIndex] {
-				maxIndex = j
+			if values[j] < values[minIndex] {
+				minIndex = j
 			}
 		}
-		swap(values, i, maxIndex)
+		values[i], values[minIndex] = values[minIndex], values[i]
 	}
 }
 
@@ -16,7 +16,7 @@ func InsertionSort(values []int) {
 	for i := 0; i < len(values); i++ {
 		for j := i; j > 0; j-- {
 			if values[j] < values[j-1] {
-				swap(values, j, j-1)
+				values[j], values[j-1] = values[j-1], values[j]
 			} else {
 				break
 			}
@@ -29,7 +29,7 @@ func BubbleSort(values []int) {
 		swapHappened := false;
 		for j := 0; j < len(values)-1-i; j++ {
 			if values[j] > values[j+1] {
-				swap(values, j, j+1)
+				values[j], values[j+1] = values[j+1], values[j]
 				swapHappened = true
 			}
 		}
@@ -56,22 +56,28 @@ func CountSort(values []int, max int) {
 
 // TODO: determine why current implementation of MergeSort so slow
 func MergeSort(values []int) []int {
+	c := make(chan []int)
+	go mergeSort(values, c)
+	return <-c
+}
+
+func mergeSort(values []int, resChan chan []int) {
 	if len(values) == 1 {
-		return values
+		resChan <- values
+		return
 	}
 
 	center := len(values) / 2
 	left := values[:center]
 	right := values[center:]
-
-	left = MergeSort(left)
-	right = MergeSort(right)
-
-	return merge(left, right)
+	c := make(chan []int, 2)
+	go mergeSort(left, c)
+	go mergeSort(right, c)
+	resChan <- merge(<-c, <-c)
 }
 
 func merge(left []int, right []int) []int {
-	var result []int
+	result := make([]int, 0)
 	leftIndex := 0
 	rightIndex := 0
 
@@ -91,8 +97,4 @@ func merge(left []int, right []int) []int {
 		result = append(result, right[rightIndex:]...)
 	}
 	return result
-}
-
-func swap(arr []int, i int, j int) {
-	arr[i], arr[j] = arr[j], arr[i]
 }
