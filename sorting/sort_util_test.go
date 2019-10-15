@@ -57,6 +57,15 @@ func TestMergeSort(t *testing.T) {
 	}
 }
 
+func TestQuickSort(t *testing.T) {
+	data := prepareArray(100)
+	data = sorting.QuickSort(data)
+
+	if !sort.IntsAreSorted(data) {
+		t.Errorf("not sorted: %v", data)
+	}
+}
+
 const itemsCount = 1000
 
 func BenchmarkBubbleSort(b *testing.B) {
@@ -124,6 +133,20 @@ func BenchmarkCountSort(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		sorting.CountSort(data, maxValue)
+	}
+}
+
+func BenchmarkQuickSort(b *testing.B) {
+	data := prepareArray(itemsCount)
+	for n := 0; n < b.N; n++ {
+		sorting.QuickSort(data)
+	}
+}
+
+func BenchmarkQuickSortSorted(b *testing.B) {
+	data := prepareSortedArray(itemsCount)
+	for n := 0; n < b.N; n++ {
+		sorting.QuickSort(data)
 	}
 }
 

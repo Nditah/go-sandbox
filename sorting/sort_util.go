@@ -98,3 +98,38 @@ func merge(left []int, right []int) []int {
 	}
 	return result
 }
+
+func QuickSort(values []int) []int {
+	quickSort(values, 0, len(values)-1)
+	return values
+}
+
+func quickSort(values []int, l int, r int) {
+	if l < r {
+		q := partition(values, l, r)
+		quickSort(values, l, q)
+		quickSort(values, q+1, r)
+	}
+}
+
+func partition(values []int, l int, r int) int {
+	center := (l + r) / 2
+	centerValue := values[center]
+	i := l
+	j := r
+	for i <= j {
+		for values[i] < centerValue {
+			i++
+		}
+		for values[j] > centerValue {
+			j--
+		}
+		if i >= j {
+			break
+		}
+		values[i], values[j] = values[j], values[i]
+		i++
+		j--
+	}
+	return j
+}
