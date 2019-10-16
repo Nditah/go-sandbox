@@ -1,0 +1,45 @@
+goos: windows
+goarch: amd64
+pkg: go-sandbox/brackets
+BenchmarkIsExpressionValidSimple-8    	 8448919	       141 ns/op
+BenchmarkIsExpressionValidComplex-8   	 2170228	       556 ns/op
+PASS
+ok  	go-sandbox/brackets	6.665s
+goos: windows
+goarch: amd64
+pkg: go-sandbox/searching
+BenchmarkBinarySearch-8   	99744818	        11.5 ns/op
+PASS
+ok  	go-sandbox/searching	1.313s
+goos: windows
+goarch: amd64
+pkg: go-sandbox/sorting
+BenchmarkBubbleSort-8            	  997249	      1151 ns/op
+BenchmarkBubbleSortSorted-8      	 1000000	      1143 ns/op
+BenchmarkInsertionSort-8         	 2072658	       596 ns/op
+BenchmarkInsertionSortSorted-8   	 2051160	       611 ns/op
+BenchmarkMergeSort-8             	   17964	     67693 ns/op
+BenchmarkMergeSortSorted-8       	   17166	     68800 ns/op
+BenchmarkSelectionSort-8         	    2551	    478647 ns/op
+BenchmarkSelectionSortSorted-8   	    2448	    469771 ns/op
+BenchmarkCountSort-8             	  599065	      1836 ns/op
+BenchmarkQuickSort-8             	   91604	     13220 ns/op
+BenchmarkQuickSortSorted-8       	   90886	     13248 ns/op
+PASS
+ok  	go-sandbox/sorting	19.423s
+goos: windows
+goarch: amd64
+pkg: go-sandbox/strings
+BenchmarkIsPalindrome-8             	209787091	         5.72 ns/op
+BenchmarkIsPalindromeIgnoreCase-8   	23076301	        50.8 ns/op
+BenchmarkReverse-8                  	 4040326	       300 ns/op
+PASS
+ok  	go-sandbox/strings	4.669s
+goos: windows
+goarch: amd64
+pkg: go-sandbox/trees
+BenchmarkTreeToListDeep-8   	 1000000	      4709 ns/op
+BenchmarkTreeToListWide-8   	 1000000	      3692 ns/op
+BenchmarkBuildTree-8        	  630675	      2049 ns/op
+PASS
+ok  	go-sandbox/trees	9.873s
