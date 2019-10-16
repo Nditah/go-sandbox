@@ -54,49 +54,56 @@ func CountSort(values []int, max int) {
 	}
 }
 
-// TODO: determine why current implementation of MergeSort so slow
 func MergeSort(values []int) []int {
-	c := make(chan []int)
-	go mergeSort(values, c)
-	return <-c
+	mergeSort(values, len(values))
+	return values
 }
 
-func mergeSort(values []int, resChan chan []int) {
-	if len(values) == 1 {
-		resChan <- values
+func mergeSort(values []int, n int) {
+	if n < 2 {
 		return
 	}
+	mid := n / 2
+	l := make([]int, mid)
+	r := make([]int, n-mid)
 
-	center := len(values) / 2
-	left := values[:center]
-	right := values[center:]
-	c := make(chan []int, 2)
-	go mergeSort(left, c)
-	go mergeSort(right, c)
-	resChan <- merge(<-c, <-c)
+	for i := 0; i < mid; i++ {
+		l[i] = values[i]
+	}
+	for i := mid; i < n; i++ {
+		r[i-mid] = values[i]
+	}
+	mergeSort(l, mid)
+	mergeSort(r, n-mid)
+
+	merge(values, l, r, mid, n-mid)
 }
 
-func merge(left []int, right []int) []int {
-	result := make([]int, 0)
-	leftIndex := 0
-	rightIndex := 0
-
-	for leftIndex < len(left) && rightIndex < len(right) {
-		if left[leftIndex] < right[rightIndex] {
-			result = append(result, left[leftIndex])
-			leftIndex++
+func merge(items []int, l []int, r []int, left int, right int) {
+	i := 0
+	j := 0
+	k := 0
+	for i < left && j < right {
+		if l[i] <= r[j] {
+			items[k] = l[i]
+			k++
+			i++
 		} else {
-			result = append(result, right[rightIndex])
-			rightIndex++
+			items[k] = r[j]
+			k++
+			j++
 		}
 	}
-	if leftIndex < len(left) {
-		result = append(result, left[leftIndex:]...)
+	for i < left {
+		items[k] = l[i]
+		k++
+		i++
 	}
-	if rightIndex < len(right) {
-		result = append(result, right[rightIndex:]...)
+	for j < right {
+		items[k] = r[j]
+		k++
+		j++
 	}
-	return result
 }
 
 func QuickSort(values []int) []int {
