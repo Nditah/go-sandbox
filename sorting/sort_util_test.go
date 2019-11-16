@@ -1,7 +1,7 @@
 package sorting_test
 
 import (
-	"go-sandbox/sorting"
+	"github.com/andrei-punko/go-sandbox/sorting"
 	"math/rand"
 	"sort"
 	"testing"

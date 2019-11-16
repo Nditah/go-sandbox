@@ -1,8 +1,8 @@
 package searching_test
 
 import (
+	"github.com/andrei-punko/go-sandbox/searching"
 	"github.com/stretchr/testify/assert"
-	"go-sandbox/searching"
 	"testing"
 )
 

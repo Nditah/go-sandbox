@@ -1,8 +1,8 @@
 package brackets_test
 
 import (
+	"github.com/andrei-punko/go-sandbox/brackets"
 	"github.com/stretchr/testify/assert"
-	"go-sandbox/brackets"
 	"testing"
 )
 
